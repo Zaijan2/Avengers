@@ -57,12 +57,27 @@ void heapify_creatures(vector<int>& powers, bool isMaxHeap) {
         make_heap(powers.begin(), powers.end(), greater<int>());  // Min-Heap
     }
 
+    // Display heap structure
     cout << (isMaxHeap ? "Max-Heap (strongest creatures first): " : "Min-Heap (weakest creatures first): ");
-    for (int power : powers) {
-        cout << power << " ";
+
+    if (isMaxHeap) {
+        // For Max-Heap
+        priority_queue<int> tempHeap(powers.begin(), powers.end());
+        while (!tempHeap.empty()) {
+            cout << tempHeap.top() << " ";
+            tempHeap.pop();
+        }
+    } else {
+        // For Min-Heap
+        priority_queue<int, vector<int>, greater<int>> tempHeap(powers.begin(), powers.end(), greater<int>());
+        while (!tempHeap.empty()) {
+            cout << tempHeap.top() << " ";
+            tempHeap.pop();
+        }
     }
     cout << endl;
 }
+
 
 // Menu display and choice
 //this is where the user would choose on the choices on what they want to see in the program
