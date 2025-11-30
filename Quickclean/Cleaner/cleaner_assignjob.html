@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cleaner Panel - Assigned Jobs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-blue: #6DAFF2;
+      --nav-yellow: #FFDB58;
+      --text-blue: #2E89F0;
+      --nav-link-color: #0b3b66;
+      --header-height: 100px;
+      --nav-height: 60px;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    /* Header */
+    .site-header {
+      background: var(--brand-blue);
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    /* Navbar */
+    .nav-bar {
+      background: var(--nav-yellow);
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--nav-link-color);
+      font-size: 16px;
+    }
+
+    .nav-link.active {
+      text-decoration: underline;
+      text-underline-offset: 5px;
+      font-weight: 700;
+    }
+
+    /* Content */
+    .content {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .content h2 {
+      color: var(--text-blue);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .job-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .job-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: var(--text-blue);
+    }
+
+    .job-card p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .job-actions {
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 8px;
+      font-size: 14px;
+    }
+
+    .btn-progress {
+      background: #4da3ff;
+      color: #fff;
+    }
+
+    .btn-complete {
+      background: #28a745;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    Cleaner Panel - Assigned Jobs
+  </header>
+
+  <!-- Navbar -->
+  <nav class="nav-bar">
+    <ul class="nav-list">
+      <li><a href="cleaner_home.html" class="nav-link">Dashboard</a></li>
+      <li><a href="cleaner-schedule.html" class="nav-link">My Schedule</a></li>
+      <li><a href="cleaner-jobs.html" class="nav-link active">Assigned Jobs</a></li>
+      <li><a href="cleaner-history.html" class="nav-link">Work History</a></li>
+      <li><a href="cleaner-settings.html" class="nav-link">Settings</a></li>
+    </ul>
+  </nav>
+
+  <!-- Content -->
+  <div class="content">
+    <h2>My Assigned Jobs</h2>
+
+    <div class="job-card">
+      <h3>Customer: Maria Santos</h3>
+      <p><strong>Service:</strong> Deep Cleaning</p>
+      <p><strong>Address:</strong> 45 Mabini St, Quezon City</p>
+      <p><strong>Date & Time:</strong> Sept 13, 2025 | 9:00 AM</p>
+      <p><strong>Notes:</strong> Focus on kitchen and windows.</p>
+      <div class="job-actions">
+        <button class="btn btn-progress">Mark In Progress</button>
+        <button class="btn btn-complete">Mark Completed</button>
+      </div>
+    </div>
+
+    <div class="job-card">
+      <h3>Customer: Juan Dela Cruz</h3>
+      <p><strong>Service:</strong> Post-Construction Cleaning</p>
+      <p><strong>Address:</strong> 123 Katipunan Ave, Manila</p>
+      <p><strong>Date & Time:</strong> Sept 14, 2025 | 1:00 PM</p>
+      <p><strong>Notes:</strong> Extra attention to dust removal.</p>
+      <div class="job-actions">
+        <button class="btn btn-progress">Mark In Progress</button>
+        <button class="btn btn-complete">Mark Completed</button>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
