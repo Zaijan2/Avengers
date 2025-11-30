@@ -97,6 +97,18 @@ if (!$conn) {
       margin-bottom: 15px;
       color: #2E89F0;
     }
+
+     /* Customers Section */
+    .cleaners-section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .cleaners-section h2 {
+      margin-bottom: 15px;
+      color: #2E89F0;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -135,6 +147,7 @@ if (!$conn) {
       <li><a href="services.php">Services</a></li>
       <li><a href="booking.php">Bookings</a></li>
       <li><a href="transactions.php">Transactions</a></li>
+      <li><a href="history.php">History</a></li>
       <li><a href="messages.php">Messages</a></li>
       <li><a href="settings.php">Settings</a></li>
       <li><a href="login.php">Logout</a></li>
@@ -189,6 +202,43 @@ if (!$conn) {
         </tbody>
       </table>
     </div>
+      <!-- Customers Section -->
+    <div class="cleaners-section">
+      <h2>Cleaners</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Date Created</th>
+          </tr>
+        </thead>
+        <tbody id="cleanersTableBody">
+          <?php
+          $query = "SELECT * FROM user WHERE role = 'cleaner'";
+          $result = mysqli_query($conn, $query);
+
+          if (mysqli_num_rows($result) > 0) {
+              while ($row = mysqli_fetch_assoc($result)) {
+                  echo "<tr>";
+                  echo "<td>{$row['name']}</td>";
+                  echo "<td>{$row['contact_num']}</td>";
+                  echo "<td>{$row['address']}</td>";
+                  echo "<td>{$row['email']}</td>";
+                  echo "<td>{$row['role']}</td>";
+                  echo "<td>{$row['date_created']}</td>";
+                  echo "</tr>";
+              }
+          } else {
+              echo "<tr><td colspan='6'>No cleaners found.</td></tr>";
+          }
+          ?>
+        </tbody>
+      </table>
+    </div>      
   </div>
 </body>
 </html>

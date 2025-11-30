@@ -60,7 +60,7 @@ elseif ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php if (!empty($inserted)): ?>
   <h2>Booking Confirmed!</h2>
   <p>✅ Your booking has been saved and is pending admin approval.</p>
-  <a href="customer-booking.php" class="btn">Book Another</a>
+  <a href="servicepage.php" class="btn">Back</a>
 
 <?php elseif (!empty($error)): ?>
   <h2>Booking Failed</h2>

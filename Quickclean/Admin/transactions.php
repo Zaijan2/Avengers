@@ -5,16 +5,21 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-// ------------------ UPDATE TRANSACTION STATUS ------------------
+// ------------------ MARK TRANSACTION AS COMPLETED ------------------
 if (isset($_GET['complete'])) {
   $id = intval($_GET['complete']);
+
+  // Update both transactions and bookings for consistency
+  $conn->query("UPDATE transactions SET status='completed' WHERE booking_id=$id");
   $conn->query("UPDATE bookings SET status='completed' WHERE booking_id=$id");
+
   header("Location: transactions.php");
   exit;
 }
 
-// ------------------ FETCH ACCEPTED & COMPLETED BOOKINGS ------------------
-$result = $conn->query("SELECT * FROM bookings WHERE status IN ('accepted', 'completed') ORDER BY created_at DESC");
+// ------------------ FETCH ACTIVE TRANSACTIONS ------------------
+$sql = "SELECT * FROM transactions WHERE status='on the way' ORDER BY action_date DESC";
+$result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -87,11 +92,12 @@ $result = $conn->query("SELECT * FROM bookings WHERE status IN ('accepted', 'com
   <div class="sidebar">
     <h2>QuickClean</h2>
     <ul>
-     <li><a href="admindashboard.php">Dashboard</a></li>
+      <li><a href="admindashboard.php">Dashboard</a></li>
       <li><a href="customers.php">Users</a></li>
       <li><a href="services.php">Services</a></li>
       <li><a href="booking.php">Bookings</a></li>
-      <li><a href="transactions.php">Transactions</a></li>
+      <li><a href="transactions.php" class="active">Transactions</a></li>
+      <li><a href="history.php">History</a></li>
       <li><a href="messages.php">Messages</a></li>
       <li><a href="settings.php">Settings</a></li>
       <li><a href="login.php">Logout</a></li>
@@ -105,7 +111,7 @@ $result = $conn->query("SELECT * FROM bookings WHERE status IN ('accepted', 'com
     </div>
 
     <div class="transactions-section">
-      <h2>Accepted Bookings</h2>
+      <h2>Active Transactions (On the Way)</h2>
       <table>
         <thead>
           <tr>
@@ -115,7 +121,6 @@ $result = $conn->query("SELECT * FROM bookings WHERE status IN ('accepted', 'com
             <th>Time</th>
             <th>Address</th>
             <th>Phone</th>
-            <th>Price</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
@@ -124,27 +129,19 @@ $result = $conn->query("SELECT * FROM bookings WHERE status IN ('accepted', 'com
           <?php
           if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-              $statusLabel = $row['status'] == 'accepted' ? 'On the Way' : 'Completed';
-              $statusClass = $row['status'] == 'accepted' ? 'status-onway' : 'status-completed';
               echo "<tr>
-                      <td>{$row['name']}</td>
+                      <td>{$row['customer_name']}</td>
                       <td>{$row['service_name']}</td>
                       <td>{$row['date']}</td>
                       <td>{$row['time']}</td>
                       <td>{$row['address']}</td>
                       <td>{$row['phone']}</td>
-                       <td>{$row['price']}</td>
-                      <td class='$statusClass'>$statusLabel</td>
-                      <td>";
-              if ($row['status'] == 'accepted') {
-                echo "<a href='transactions.php?complete={$row['booking_id']}' class='btn btn-complete'>Mark Completed</a>";
-              } else {
-                echo "✔ Done";
-              }
-              echo "</td></tr>";
+                      <td class='status-onway'>On the Way</td>
+                      <td><a href='transactions.php?complete={$row['booking_id']}' class='btn btn-complete'>Mark Completed</a></td>
+                    </tr>";
             }
           } else {
-            echo "<tr><td colspan='8'>No accepted bookings yet.</td></tr>";
+            echo "<tr><td colspan='8'>No active transactions.</td></tr>";
           }
           ?>
         </tbody>

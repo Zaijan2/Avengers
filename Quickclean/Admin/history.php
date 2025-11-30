@@ -10,8 +10,13 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-// ------------------ FETCH PENDING OR DECLINED BOOKINGS ------------------
-$sql = "SELECT * FROM bookings WHERE status IN ('pending','declined') ORDER BY created_at DESC";
+// ------------------ FETCH COMPLETED TRANSACTIONS ------------------
+$sql = "
+  SELECT transaction_id, booking_id, customer_name, service_name, date, time, address, phone, email, status, action_date
+  FROM transactions
+  WHERE status = 'completed'
+  ORDER BY action_date DESC
+";
 $result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
@@ -19,7 +24,7 @@ $result = $conn->query($sql);
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bookings Management - QuickClean</title>
+  <title>Completed History - QuickClean</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,7 +32,7 @@ $result = $conn->query($sql);
 
     /* Sidebar */
     .sidebar {
-      width: 240px; background: #5da0e4; color: #fff;
+      width: 240px; background: #5da0e4ff; color: #fff;
       display: flex; flex-direction: column; padding: 20px 0;
       position: fixed; height: 100%;
     }
@@ -55,52 +60,19 @@ $result = $conn->query($sql);
     .admin-profile { display: flex; align-items: center; gap: 10px; }
     .admin-profile img { width: 40px; height: 40px; border-radius: 50%; }
 
-    /* Bookings Section */
-    .bookings-section {
+    /* History Section */
+    .history-section {
       background: #fff; padding: 20px; border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .bookings-section h2 { margin-bottom: 15px; color: #2E89F0; }
+    .history-section h2 { margin-bottom: 15px; color: #2E89F0; }
     table { width: 100%; border-collapse: collapse; margin-top: 15px; }
     th, td {
       border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 14px;
     }
     th { background: #2E89F0; color: #fff; }
     tr:nth-child(even) { background: #f9f9f9; }
-
-    /* Buttons */
-    .btn {
-      display: inline-block;
-      padding: 8px 14px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s ease-in-out;
-      margin: 4px;
-    }
-    .btn-accept {
-      background: #27ae60;
-      color: #fff;
-    }
-    .btn-accept:hover {
-      background: #219150;
-      transform: translateY(-2px);
-    }
-    .btn-decline {
-      background: #e74c3c;
-      color: #fff;
-    }
-    .btn-decline:hover {
-      background: #c0392b;
-      transform: translateY(-2px);
-    }
-
-    /* Status text */
-    .status-pending { color: #f1c40f; font-weight: 600; }
-    .status-declined { color: #e74c3c; font-weight: 600; }
+    .status-completed { color: #27ae60; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -109,11 +81,11 @@ $result = $conn->query($sql);
     <h2>QuickClean</h2>
     <ul>
       <li><a href="admindashboard.php">Dashboard</a></li>
-      <li><a href="customers.php">User</a></li>
+      <li><a href="customers.php">Users</a></li>
       <li><a href="services.php">Services</a></li>
-      <li><a href="booking.php" class="active">Bookings</a></li>
+      <li><a href="booking.php">Bookings</a></li>
       <li><a href="transactions.php">Transactions</a></li>
-      <li><a href="history.php">History</a></li>
+      <li><a href="history.php" class="active">History</a></li>
       <li><a href="messages.php">Messages</a></li>
       <li><a href="settings.php">Settings</a></li>
       <li><a href="login.php">Logout</a></li>
@@ -123,58 +95,49 @@ $result = $conn->query($sql);
   <!-- Main Content -->
   <div class="main-content">
     <div class="topbar">
-      <h1>Bookings Management</h1>
+      <h1>Completed Transactions</h1>
       <div class="admin-profile">
         <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin" />
         <span>Admin</span>
       </div>
     </div>
 
-    <div class="bookings-section">
-      <h2>Pending & Declined Bookings</h2>
-      <table id="bookingTable">
+    <div class="history-section">
+      <h2>Completed Services</h2>
+      <table>
         <thead>
           <tr>
-            <th>Customer Name</th>
+            <th>Transaction ID</th>
+            <th>Customer</th>
             <th>Service</th>
             <th>Date</th>
             <th>Time</th>
             <th>Address</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Price</th>
-            <th>Notes</th>           
             <th>Status</th>
-            <th>Actions</th>
+            <th>Action Date</th>
           </tr>
         </thead>
         <tbody>
           <?php
           if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-              $statusClass = "status-" . strtolower($row['status']);
-              echo "<tr id='booking-{$row['booking_id']}'>
-                      <td>{$row['name']}</td>
+              echo "<tr>
+                      <td>{$row['transaction_id']}</td>
+                      <td>{$row['customer_name']}</td>
                       <td>{$row['service_name']}</td>
                       <td>{$row['date']}</td>
                       <td>{$row['time']}</td>
                       <td>{$row['address']}</td>
                       <td>{$row['email']}</td>
                       <td>{$row['phone']}</td>
-                      <td>{$row['price']}</td>
-                      <td>{$row['notes']}</td>
-                      <td class='$statusClass'>{$row['status']}</td>
-                      <td style='white-space: nowrap;'>";
-              if ($row['status'] == 'pending') {
-                echo "<button class='btn btn-accept' onclick='updateBooking({$row['booking_id']}, \"accept\")'>Accept</button>
-                      <button class='btn btn-decline' onclick='updateBooking({$row['booking_id']}, \"decline\")'>Decline</button>";
-              } elseif ($row['status'] == 'declined') {
-                echo "<span class='status-declined'>Declined</span>";
-              }
-              echo "</td></tr>";
+                      <td class='status-completed'>Completed</td>
+                      <td>{$row['action_date']}</td>
+                    </tr>";
             }
           } else {
-            echo "<tr><td colspan='10'>No pending bookings found.</td></tr>";
+            echo "<tr><td colspan='10'>No completed transactions found.</td></tr>";
           }
           $conn->close();
           ?>
@@ -182,25 +145,5 @@ $result = $conn->query($sql);
       </table>
     </div>
   </div>
-
-  <script>
-    function updateBooking(id, action) {
-      if (action === 'decline' && !confirm("Are you sure you want to decline this booking?")) {
-        return;
-      }
-
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", "update-booking-status.php", true);
-      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhr.onload = function() {
-        if (this.status === 200) {
-          document.getElementById("booking-" + id).remove(); // remove row from table instantly
-        } else {
-          alert("Failed to update booking status.");
-        }
-      };
-      xhr.send("id=" + id + "&action=" + action);
-    }
-  </script>
 </body>
 </html>

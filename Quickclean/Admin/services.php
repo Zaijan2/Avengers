@@ -108,6 +108,7 @@ $result = $conn->query("SELECT * FROM services ORDER BY service_id DESC");
       <li><a href="services.php">Services</a></li>
       <li><a href="booking.php">Bookings</a></li>
        <li><a href="transactions.php">Transactions</a></li>
+       <li><a href="history.php">History</a></li>
       <li><a href="messages.php">Messages</a></li>
       <li><a href="settings.php">Settings</a></li>
       <li><a href="login.php">Logout</a></li>

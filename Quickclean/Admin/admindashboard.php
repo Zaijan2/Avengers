@@ -33,7 +33,7 @@ if ($result_services && $row = $result_services->fetch_assoc()) {
 
 // Count total messages
 $total_messages = 0;
-$result_messages = $conn->query("SELECT COUNT(*) AS total FROM contact_messages");
+$result_messages = $conn->query("SELECT COUNT(*) AS total FROM messages");
 if ($result_messages && $row = $result_messages->fetch_assoc()) {
   $total_messages = $row['total'];
 }
@@ -180,6 +180,7 @@ $recent_users = $conn->query("SELECT name, email, date_created FROM user ORDER B
       <li><a href="services.php">Services</a></li>
       <li><a href="booking.php">Bookings</a></li>
        <li><a href="transactions.php">Transactions</a></li>
+       <li><a href="history.php">History</a></li>
       <li><a href="messages.php">Messages</a></li>
       <li><a href="settings.php">Settings</a></li>
       <li><a href="logout.php">Logout</a></li>
