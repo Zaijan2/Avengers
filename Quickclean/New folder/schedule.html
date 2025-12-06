@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #1a202c;
+      min-height: 100vh;
+    }
+
+    .wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* --- Sidebar with Glassmorphism --- */
+    .sidebar {
+      width: 260px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 30px 20px;
+      color: white;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-logo {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 40px;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-item {
+      margin: 8px 0;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 14px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+    }
+
+    .nav-item a:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateX(4px);
+    }
+
+    .nav-item a.active {
+      background: white;
+      color: #667eea;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* --- Content Section --- */
+    .content {
+      flex: 1;
+      padding: 30px 40px;
+      overflow-y: auto;
+    }
+
+    .header {
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* --- Calendar Header --- */
+    .calendar-header {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .calendar-title {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .calendar-nav button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s ease;
+      color: #667eea;
+    }
+
+    .calendar-nav button:hover {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    /* --- Schedule Grid --- */
+    .schedule-grid {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .schedule-day {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      animation: fadeIn 0.5s ease;
+      transition: all 0.3s ease;
+    }
+
+    .schedule-day:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+    }
+
+    .schedule-day-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .schedule-date {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .schedule-count {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .schedule-bookings {
+      padding: 20px 24px;
+    }
+
+    .schedule-booking {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .schedule-booking:last-child {
+      margin-bottom: 0;
+    }
+
+    .schedule-booking:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      transform: translateX(4px);
+    }
+
+    .booking-time {
+      flex-shrink: 0;
+      width: 80px;
+      text-align: center;
+      padding: 12px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .booking-time-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #667eea;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .booking-time-period {
+      font-size: 11px;
+      color: #718096;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .booking-details {
+      flex: 1;
+    }
+
+    .booking-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 6px;
+    }
+
+    .booking-info {
+      font-size: 14px;
+      color: #718096;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .booking-info-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .booking-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .booking-status.assigned {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: white;
+    }
+
+    .booking-status.confirmed {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    /* --- Empty State --- */
+    .empty-state {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      padding: 80px 40px;
+      text-align: center;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .empty-state-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      opacity: 0.3;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .empty-state-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 12px;
+    }
+
+    .empty-state-text {
+      font-size: 16px;
+      color: #718096;
+      margin-bottom: 24px;
+    }
+
+    .empty-state-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .empty-state-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -260px;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .calendar-header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .schedule-booking {
+        flex-direction: column;
+      }
+
+      .booking-time {
+        width: 100%;
+      }
+
+      .booking-info {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="sidebar">
+      <div class="sidebar-logo">QuickClean</div>
+      <div class="nav-item"><a href="dashboard.html">📊 Dashboard</a></div>
+      <div class="nav-item"><a href="assigned.html">📋 Assigned Bookings</a></div>
+      <div class="nav-item"><a href="schedule.html" class="active">📅 Schedule</a></div>
+      <div class="nav-item"><a href="earnings.html">💰 Earnings</a></div>
+      <div class="nav-item"><a href="notification.html">🔔 Notifications</a></div>
+      <div class="nav-item"><a href="profile.html">👤 Profile</a></div>
+    </div>
+
+    <div class="content">
+      <div class="header">
+        <h1>Schedule</h1>
+        <div class="header-actions">
+          <button class="button">📆 View Calendar</button>
+        </div>
+      </div>
+
+      <!-- Calendar Navigation -->
+      <div class="calendar-header">
+        <div class="calendar-title">November 2025</div>
+        <div class="calendar-nav">
+          <button>←</button>
+          <button>Today</button>
+          <button>→</button>
+        </div>
+      </div>
+
+      <!-- Schedule with Bookings -->
+      <div class="schedule-grid">
+        <!-- Saturday, November 30 -->
+        <div class="schedule-day">
+          <div class="schedule-day-header">
+            <div class="schedule-date">Saturday, November 30</div>
+            <div class="schedule-count">2 bookings</div>
+          </div>
+          <div class="schedule-bookings">
+            <div class="schedule-booking">
+              <div class="booking-time">
+                <div class="booking-time-value">09:00</div>
+                <div class="booking-time-period">AM</div>
+              </div>
+              <div class="booking-details">
+                <div class="booking-title">Full Home Cleaning - Aileen Santos</div>
+                <div class="booking-info">
+                  <div class="booking-info-item">
+                    <span>📍</span>
+                    <span>Unit 5, Greenview Apt, Makati</span>
+                  </div>
+                  <div class="booking-info-item">
+                    <span>⏱️</span>
+                    <span>3 hours</span>
+                  </div>
+                  <div class="booking-info-item">
+                    <span class="booking-status assigned">Assigned</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="schedule-booking">
+              <div class="booking-time">
+                <div class="booking-time-value">02:00</div>
+                <div class="booking-time-period">PM</div>
+              </div>
+              <div class="booking-details">
+                <div class="booking-title">Office Cleaning - Marco Reyes</div>
+                <div class="booking-info">
+                  <div class="booking-info-item">
+                    <span>📍</span>
+                    <span>BGC Tower 2, Taguig</span>
+                  </div>
+                  <div class="booking-info-item">
+                    <span>⏱️</span>
+                    <span>2 hours</span>
+                  </div>
+                  <div class="booking-info-item">
+                    <span class="booking-status confirmed">Confirmed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monday, December 2 -->
+        <div class="schedule-day">
+          <div class="schedule-day-header">
+            <div class="schedule-date">Monday, December 2</div>
+            <div class="schedule-count">1 booking</div>
+          </div>
+          <div class="schedule-bookings">
+            <div class="schedule-booking">
+              <div class="booking-time">
+                <div class="booking-time-value">10:00</div>
+                <div class="booking-time-period">AM</div>
+              </div>
+              <div class="booking-details">
+                <div class="booking-title">Deep Cleaning - Sofia Cruz</div>
+                <div class="booking-info">
+                  <div class="booking-info-item">
+                    <span>📍</span>
+                    <span>Quezon City</span>
+                  </div>
+                  <div class="booking-info-item">
+                    <span>⏱️</span>
+                    <span>4 hours</span>
+                  </div>
+                  <div class="booking-info-item">
+                    <span class="booking-status confirmed">Confirmed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Uncomment for empty state -->
+      <!-- 
+      <div class="empty-state">
+        <div class="empty-state-icon">📅</div>
+        <div class="empty-state-title">No upcoming schedule yet</div>
+        <div class="empty-state-text">Your schedule will appear here once bookings are assigned to you.</div>
+        <button class="empty-state-button">🔍 Browse Available Jobs</button>
+      </div>
+      -->
+    </div>
+  </div>
+</body>
+</html>
