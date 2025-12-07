@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cleaner Management - QuickClean</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background: #f5f6fa;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: #2E89F0;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      position: fixed;
+      height: 100%;
+    }
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+    .sidebar ul { list-style: none; }
+    .sidebar ul li { padding: 15px 20px; }
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 16px;
+      display: block;
+      transition: 0.3s;
+    }
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+      background: #1c6ed6;
+      border-radius: 6px;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 240px;
+      padding: 20px;
+      width: 100%;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .topbar h1 { font-size: 20px; color: #123; }
+    .admin-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .admin-profile img {
+      width: 40px; height: 40px; border-radius: 50%;
+    }
+
+    /* Cleaners Table */
+    .cleaners-section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .cleaners-section h2 {
+      margin-bottom: 15px;
+      color: #2E89F0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background: #2E89F0;
+      color: #fff;
+    }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn-primary { background: #2E89F0; color: #fff; }
+    .btn-danger { background: #ff6b6b; color: #fff; }
+    .btn-secondary { background: #777; color: #fff; }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 350px;
+    }
+    .modal-content h3 { margin-bottom: 10px; }
+    .modal-content input, .modal-content select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .modal-content button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+    .save-btn { background: #2E89F0; color: #fff; }
+    .close-btn { background: #ccc; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>QuickClean</h2>
+    <ul>
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="users.html">Users</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="bookings.html">Bookings</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+      <li><a href="cleaners.html" class="active">Cleaners</a></li>
+      <li><a href="messages.html">Messages</a></li>
+      <li><a href="settings.html">Settings</a></li>
+      <li><a href="login.html">Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1>Cleaner Management & Assignment</h1>
+      <div class="admin-profile">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin">
+        <span>Admin</span>
+      </div>
+    </div>
+
+    <!-- Cleaner Section -->
+    <div class="cleaners-section">
+      <h2>Cleaners</h2>
+      <button class="btn btn-primary" onclick="openModal()">➕ Add Cleaner</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Availability</th>
+            <th>Assigned Jobs</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="cleanerTableBody">
+          <!-- Rows will be added dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="cleanerModal">
+    <div class="modal-content">
+      <h3>Add Cleaner</h3>
+      <input type="text" id="cleanerName" placeholder="Cleaner Name">
+      <select id="availability">
+        <option value="">Select Availability</option>
+        <option>Full-time</option>
+        <option>Part-time</option>
+        <option>On-call</option>
+      </select>
+      <button class="save-btn" onclick="saveCleaner()">Save</button>
+      <button class="close-btn" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const cleanerTableBody = document.getElementById("cleanerTableBody");
+    let cleaners = [];
+
+    function openModal() {
+      document.getElementById("cleanerModal").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("cleanerModal").style.display = "none";
+    }
+
+    function saveCleaner() {
+      const name = document.getElementById("cleanerName").value;
+      const availability = document.getElementById("availability").value;
+      if (name && availability) {
+        cleaners.push({ name, availability, jobs: 0 });
+        renderCleaners();
+        closeModal();
+      }
+    }
+
+    function assignJob(index) {
+      cleaners[index].jobs += 1;
+      renderCleaners();
+    }
+
+    function deleteCleaner(index) {
+      cleaners.splice(index, 1);
+      renderCleaners();
+    }
+
+    function renderCleaners() {
+      cleanerTableBody.innerHTML = "";
+      cleaners.forEach((c, i) => {
+        const row = `<tr>
+          <td>${c.name}</td>
+          <td>${c.availability}</td>
+          <td>${c.jobs}</td>
+          <td>
+            <button class="btn btn-secondary" onclick="assignJob(${i})">Assign Job</button>
+            <button class="btn btn-danger" onclick="deleteCleaner(${i})">Delete</button>
+          </td>
+        </tr>`;
+        cleanerTableBody.innerHTML += row;
+      });
+    }
+  </script>
+</body>
+</html>
