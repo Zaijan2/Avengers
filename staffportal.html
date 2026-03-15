@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartStock — Staff Portal | Bean There Café</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --mocha:        #4A2C2A;
+      --mocha-deep:   #2E1A18;
+      --mocha-mid:    #6B3D3A;
+      --cream:        #F5ECD7;
+      --cream-light:  #FBF6EE;
+      --cream-dark:   #E8D8BA;
+      --charcoal:     #2C2C2C;
+      --charcoal-mid: #444444;
+      --gold:         #C9943A;
+      --gold-light:   #E8B860;
+      --sage:         #7A9E7E;
+      --red-soft:     #C0392B;
+      --sidebar-w:    240px;
+      --header-h:     64px;
+      --font-display: 'Playfair Display', serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'DM Mono', monospace;
+      --shadow-sm:    0 2px 8px rgba(74,44,42,.10);
+      --shadow-md:    0 6px 24px rgba(74,44,42,.15);
+      --shadow-lg:    0 12px 40px rgba(74,44,42,.22);
+      --radius:       12px;
+      --radius-lg:    18px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--cream-light); color: var(--charcoal); min-height: 100vh; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--cream); }
+    ::-webkit-scrollbar-thumb { background: var(--mocha-mid); border-radius: 99px; }
+
+    /* ── HEADER ── */
+    #app-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      height: var(--header-h);
+      background: var(--mocha-deep);
+      display: flex; align-items: center; padding: 0 24px 0 0;
+      box-shadow: 0 2px 20px rgba(0,0,0,.35);
+    }
+    .header-brand {
+      width: var(--sidebar-w); flex-shrink: 0;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 20px;
+      border-right: 1px solid rgba(255,255,255,.08);
+    }
+    .brand-logo {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--gold); color: var(--mocha-deep);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; box-shadow: 0 2px 10px rgba(201,148,58,.45);
+      flex-shrink: 0;
+    }
+    .brand-text .name { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--cream); }
+    .brand-text .sub  { font-size: 10px; color: var(--gold-light); letter-spacing: 1.5px; text-transform: uppercase; }
+    .header-center {
+      padding-left: 22px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .portal-badge {
+      background: rgba(122,158,126,.18); color: #9ecba2;
+      font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 99px;
+    }
+    .header-view-label { font-size: 13px; color: rgba(245,236,215,.5); }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+    .header-clock { font-family: var(--font-mono); font-size: 13px; color: rgba(245,236,215,.55); }
+    .header-link {
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(201,148,58,.14); border: 1px solid rgba(201,148,58,.28);
+      color: var(--gold-light); font-size: 12px; font-weight: 600;
+      padding: 6px 14px; border-radius: 99px; cursor: pointer; text-decoration: none;
+      transition: all .2s;
+    }
+    .header-link:hover { background: rgba(201,148,58,.25); color: var(--gold-light); }
+    .header-user {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.10);
+      border-radius: 99px; padding: 5px 14px 5px 5px; cursor: pointer;
+    }
+    .header-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--gold); color: var(--mocha-deep);
+      font-weight: 700; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-user-name { font-size: 13px; color: var(--cream); font-weight: 500; }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      position: fixed; top: var(--header-h); left: 0; bottom: 0;
+      width: var(--sidebar-w); z-index: 900;
+      background: var(--mocha-deep);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .sidebar-section-label {
+      padding: 20px 20px 6px;
+      font-size: 9.5px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(245,236,215,.3);
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 20px; color: rgba(245,236,215,.6);
+      cursor: pointer; font-size: 13.5px; font-weight: 500;
+      border-left: 3px solid transparent; transition: all .2s;
+      user-select: none;
+    }
+    .nav-item i { width: 18px; text-align: center; font-size: 14px; }
+    .nav-item:hover { background: rgba(255,255,255,.06); color: var(--cream); }
+    .nav-item.active { background: rgba(201,148,58,.12); color: var(--gold-light); border-left-color: var(--gold); }
+    .nav-item.active i { color: var(--gold); }
+    .nav-badge {
+      margin-left: auto; background: var(--red-soft); color: #fff;
+      font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 99px;
+    }
+    .sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 8px 16px; }
+    .sidebar-footer {
+      margin-top: auto; padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      text-align: center;
+    }
+    .sidebar-footer p { font-size: 10px; color: rgba(245,236,215,.22); line-height: 1.7; }
+
+    /* ── MAIN ── */
+    #main {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--header-h);
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── PAGE STRIP ── */
+    .page-strip {
+      background: var(--cream);
+      border-bottom: 1px solid var(--cream-dark);
+      padding: 15px 26px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .page-strip h1 {
+      font-family: var(--font-display);
+      font-size: 21px; font-weight: 700; color: var(--mocha-deep);
+    }
+    .page-strip .sub { font-size: 12px; color: var(--mocha-mid); margin-top: 1px; }
+
+    /* ── POS LAYOUT ── */
+    .pos-layout {
+      display: flex;
+      min-height: calc(100vh - var(--header-h) - 62px);
+    }
+
+    /* Products */
+    .pos-products { flex: 1; padding: 20px 22px; overflow-y: auto; }
+    .cat-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .cat-tab {
+      padding: 7px 18px; border-radius: 99px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border: 2px solid var(--cream-dark);
+      background: var(--cream); color: var(--charcoal-mid);
+      transition: all .2s;
+    }
+    .cat-tab:hover { border-color: var(--mocha-mid); color: var(--mocha); }
+    .cat-tab.active { background: var(--mocha); color: var(--cream); border-color: var(--mocha); box-shadow: var(--shadow-sm); }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 13px;
+    }
+    .product-card {
+      background: var(--cream);
+      border: 1.5px solid var(--cream-dark);
+      border-radius: var(--radius);
+      padding: 16px 12px 13px;
+      cursor: pointer; text-align: center;
+      transition: all .22s; position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+    .product-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--gold); }
+    .product-card.low-stock { border-color: #e67e22; }
+    .product-icon { font-size: 32px; display: block; margin-bottom: 8px; line-height: 1; }
+    .product-name { font-weight: 600; font-size: 13px; color: var(--mocha-deep); margin-bottom: 4px; line-height: 1.3; }
+    .product-price { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--gold); }
+    .product-stock { font-size: 10px; color: #999; margin-top: 3px; }
+    .low-badge {
+      position: absolute; top: 7px; right: 7px;
+      background: #e67e22; color: #fff;
+      font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 99px;
+    }
+
+    /* Cart */
+    .pos-cart {
+      width: 315px; flex-shrink: 0;
+      background: var(--cream);
+      border-left: 1.5px solid var(--cream-dark);
+      display: flex; flex-direction: column;
+    }
+    .cart-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--cream-dark);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .cart-header h3 { font-family: var(--font-display); font-size: 17px; color: var(--mocha-deep); }
+    .cart-count {
+      background: var(--mocha); color: var(--cream);
+      font-size: 11px; font-weight: 700;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cart-items { flex: 1; overflow-y: auto; padding: 10px 14px; }
+    .cart-empty { text-align: center; padding: 40px 20px; color: #bbb; font-size: 13px; }
+    .cart-empty i { font-size: 38px; display: block; margin-bottom: 10px; opacity: .28; }
+    .cart-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 10px 0; border-bottom: 1px solid var(--cream-dark);
+      animation: slideIn .2s ease;
+    }
+    @keyframes slideIn { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:translateX(0); } }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: 13px; font-weight: 500; color: var(--charcoal); }
+    .cart-item-unit { font-size: 11px; color: #aaa; font-family: var(--font-mono); }
+    .qty-ctrl { display: flex; align-items: center; gap: 5px; }
+    .qty-btn {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid var(--cream-dark); background: var(--cream-light);
+      font-size: 11px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s; color: var(--charcoal);
+    }
+    .qty-btn:hover { background: var(--mocha); border-color: var(--mocha); color: #fff; }
+    .qty-num { font-size: 13px; font-weight: 700; min-width: 18px; text-align: center; color: var(--mocha-deep); }
+    .cart-item-total { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--mocha-deep); min-width: 52px; text-align: right; }
+
+    .cart-footer { padding: 14px 18px; border-top: 1px solid var(--cream-dark); }
+    .cart-line { display: flex; justify-content: space-between; font-size: 13px; color: var(--charcoal-mid); margin-bottom: 5px; }
+    .cart-line span:last-child { font-family: var(--font-mono); }
+    .cart-line.total { font-size: 16px; font-weight: 700; color: var(--mocha-deep); margin-top: 8px; padding-top: 8px; border-top: 1.5px solid var(--cream-dark); }
+    .payment-select {
+      width: 100%; margin: 11px 0 9px;
+      padding: 9px 12px; border-radius: 8px;
+      border: 1.5px solid var(--cream-dark); background: var(--cream-light);
+      font-family: var(--font-body); font-size: 13px; color: var(--charcoal);
+      outline: none; transition: border-color .2s; cursor: pointer;
+    }
+    .payment-select:focus { border-color: var(--mocha); }
+    .btn-charge {
+      width: 100%; padding: 12px;
+      background: var(--mocha); color: var(--cream);
+      border: none; border-radius: var(--radius);
+      font-family: var(--font-body); font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: .4px; transition: all .2s;
+    }
+    .btn-charge:hover { background: var(--mocha-mid); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn-clear {
+      width: 100%; padding: 8px; margin-top: 7px;
+      background: transparent; color: #bbb;
+      border: 1.5px solid var(--cream-dark); border-radius: 8px;
+      font-family: var(--font-body); font-size: 12px;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-clear:hover { border-color: var(--red-soft); color: var(--red-soft); }
+
+    /* ── MODALS ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(20,10,8,.6);
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: var(--cream-light);
+      border-radius: var(--radius-lg);
+      padding: 28px 30px; max-width: 420px; width: 92%;
+      box-shadow: var(--shadow-lg);
+      animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popIn { from { opacity:0; transform:scale(.88); } to { opacity:1; transform:scale(1); } }
+    .modal-title { font-family: var(--font-display); font-size: 20px; color: var(--mocha-deep); margin-bottom: 5px; }
+    .modal-sub { font-size: 13px; color: #888; margin-bottom: 20px; }
+
+    /* QR */
+    .qr-box { background: var(--cream); border: 2px dashed var(--gold); border-radius: var(--radius); padding: 22px; text-align: center; margin-bottom: 16px; }
+    .qr-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; width: 112px; margin: 0 auto 12px; }
+    .qr-cell { aspect-ratio: 1; background: var(--mocha-deep); border-radius: 1.5px; }
+    .qr-cell:nth-child(even) { opacity: .3; }
+    .qr-cell:nth-child(3n)   { opacity: .55; }
+    .qr-cell:nth-child(1),.qr-cell:nth-child(7),.qr-cell:nth-child(43),.qr-cell:nth-child(49) { opacity:1; width:100%; aspect-ratio:1; }
+    .qr-amount { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--mocha-deep); }
+    .qr-note   { font-size: 11px; color: #aaa; margin-top: 3px; }
+    .info-note { font-size: 12px; color: #888; background: rgba(230,126,34,.08); padding: 9px 12px; border-radius: 8px; border-left: 3px solid #e67e22; margin-bottom: 14px; }
+
+    /* Buttons */
+    .btn-confirm {
+      width: 100%; padding: 13px;
+      background: var(--sage); color: #fff; border: none; border-radius: var(--radius);
+      font-family: var(--font-body); font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all .2s; letter-spacing: .3px;
+    }
+    .btn-confirm:hover { background: #5e8562; }
+    .btn-modal-cancel {
+      width: 100%; padding: 9px; margin-top: 8px;
+      background: transparent; color: #bbb;
+      border: 1.5px solid var(--cream-dark); border-radius: 8px;
+      font-family: var(--font-body); font-size: 13px; cursor: pointer; transition: all .2s;
+    }
+    .btn-modal-cancel:hover { color: var(--red-soft); border-color: var(--red-soft); }
+
+    /* Cash modal */
+    .cash-input {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--cream-dark); border-radius: 8px;
+      font-family: var(--font-display); font-size: 22px; color: var(--mocha-deep);
+      outline: none; background: var(--cream); transition: border-color .2s;
+    }
+    .cash-input:focus { border-color: var(--mocha); }
+    .change-row {
+      background: var(--cream); border: 1.5px solid var(--cream-dark);
+      border-radius: 8px; padding: 11px 16px; margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .change-label { font-size: 14px; font-weight: 600; color: #888; }
+    .change-value { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--sage); }
+
+    /* Success modal */
+    .success-icon {
+      width: 58px; height: 58px; border-radius: 50%;
+      background: rgba(122,158,126,.15); color: var(--sage); font-size: 26px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .receipt-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--cream-dark); }
+    .receipt-row:last-child { border-bottom: none; }
+    .receipt-row span:first-child { color: #888; }
+    .receipt-row span:last-child { font-family: var(--font-mono); font-weight: 600; }
+
+    /* ── TOAST ── */
+    #toast-container { position: fixed; bottom: 22px; right: 22px; z-index: 99999; display: flex; flex-direction: column; gap: 7px; }
+    .toast-msg {
+      background: var(--charcoal); color: var(--cream);
+      font-size: 13px; font-weight: 500;
+      padding: 11px 16px; border-radius: 10px;
+      box-shadow: var(--shadow-md);
+      display: flex; align-items: center; gap: 8px;
+      animation: toastIn .28s ease;
+    }
+    .toast-msg.success { border-left: 3px solid var(--sage); }
+    .toast-msg.warn    { border-left: 3px solid #e67e22; }
+    @keyframes toastIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="app-header">
+  <div class="header-brand">
+    <div class="brand-logo"><i class="fas fa-mug-hot"></i></div>
+    <div class="brand-text">
+      <div class="name">SmartStock</div>
+      <div class="sub">Bean There Café</div>
+    </div>
+  </div>
+  <div class="header-center">
+    <span class="portal-badge">Staff Portal</span>
+    <span class="header-view-label">Point of Sale</span>
+  </div>
+  <div class="header-right">
+    <div class="header-clock" id="clock"></div>
+    <a href="admin-dashboard.html" class="header-link">
+      <i class="fas fa-shield-halved"></i> Admin Panel
+    </a>
+    <div class="header-user">
+      <div class="header-avatar">MR</div>
+      <span class="header-user-name">Mark Reyes</span>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-section-label">Staff Portal</div>
+  <div class="nav-item active">
+    <i class="fas fa-cash-register"></i> Point of Sale
+  </div>
+  <div class="nav-item" onclick="showToast('Shift summary — coming soon!','success')">
+    <i class="fas fa-clock"></i> My Shift
+  </div>
+  <div class="nav-item" onclick="showToast('Transaction history — coming soon!','success')">
+    <i class="fas fa-receipt"></i> My Transactions
+  </div>
+  <hr class="sidebar-divider"/>
+  <div class="sidebar-section-label">Quick Info</div>
+  <div class="nav-item" onclick="showToast('Stock alerts loaded','warn')">
+    <i class="fas fa-triangle-exclamation"></i> Stock Alerts
+    <span class="nav-badge" id="alert-badge">3</span>
+  </div>
+  <div class="sidebar-footer">
+    <p>SmartStock v1.0<br/>Bean There Café<br/>Staff Portal</p>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <!-- Page Strip -->
+  <div class="page-strip">
+    <div>
+      <h1><i class="fas fa-cash-register" style="color:var(--gold);font-size:18px;margin-right:8px;"></i>Point of Sale</h1>
+      <div class="sub">Select items to build an order, then process payment</div>
+    </div>
+    <span style="font-size:12px;background:rgba(230,126,34,.1);color:#e67e22;padding:5px 13px;border-radius:99px;font-weight:600;display:flex;align-items:center;gap:5px;">
+      <i class="fas fa-triangle-exclamation"></i> 3 items low on stock
+    </span>
+  </div>
+
+  <!-- POS Layout -->
+  <div class="pos-layout">
+
+    <!-- Product Area -->
+    <div class="pos-products">
+      <div class="cat-tabs">
+        <button class="cat-tab active" onclick="filterCat('all',this)">All Items</button>
+        <button class="cat-tab" onclick="filterCat('hot',this)"><i class="fas fa-fire-flame-curved"></i> Hot</button>
+        <button class="cat-tab" onclick="filterCat('iced',this)"><i class="fas fa-snowflake"></i> Iced</button>
+        <button class="cat-tab" onclick="filterCat('pastry',this)"><i class="fas fa-cookie-bite"></i> Pastries</button>
+      </div>
+      <div class="products-grid" id="products-grid"></div>
+    </div>
+
+    <!-- Cart -->
+    <div class="pos-cart">
+      <div class="cart-header">
+        <h3><i class="fas fa-shopping-cart" style="color:var(--gold);margin-right:7px;"></i>Current Order</h3>
+        <div class="cart-count" id="cart-count">0</div>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <div class="cart-empty">
+          <i class="fas fa-mug-hot"></i>
+          <div>No items yet</div>
+          <div style="font-size:11px;margin-top:4px;color:#ccc;">Tap a product to add it</div>
+        </div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-line"><span>Subtotal</span><span id="subtotal">₱0.00</span></div>
+        <div class="cart-line"><span>VAT (12%)</span><span id="vat">₱0.00</span></div>
+        <div class="cart-line"><span>Discount</span><span style="color:var(--sage);">— ₱0.00</span></div>
+        <div class="cart-line total"><span>Total</span><span id="grand-total">₱0.00</span></div>
+        <select class="payment-select" id="payment-method">
+          <option value="">— Select Payment Method —</option>
+          <option value="cash">💵 Cash</option>
+          <option value="qr">📱 QR E-Wallet (GCash / Maya)</option>
+        </select>
+        <button class="btn-charge" onclick="processPayment()">
+          <i class="fas fa-bolt" style="margin-right:6px;"></i>Process Payment
+        </button>
+        <button class="btn-clear" onclick="clearCart()">
+          <i class="fas fa-trash-can" style="margin-right:5px;"></i>Clear Order
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /pos-layout -->
+</div><!-- /main -->
+
+<!-- ═══════ MODAL: QR Payment ═══════ -->
+<div class="modal-overlay" id="modal-qr">
+  <div class="modal-box">
+    <div class="modal-title"><i class="fas fa-qrcode" style="color:var(--gold);margin-right:8px;"></i>QR E-Wallet Payment</div>
+    <div class="modal-sub">Show this code to the customer. Confirm manually once payment is received.</div>
+    <div class="qr-box">
+      <div class="qr-grid" id="qr-grid"></div>
+      <div class="qr-amount" id="qr-amount">₱0.00</div>
+      <div class="qr-note">GCash · Maya · ShopeePay accepted</div>
+    </div>
+    <div class="info-note">
+      <i class="fas fa-info-circle" style="margin-right:5px;"></i>
+      <strong>Study Limitation:</strong> Automatic verification is unavailable. Please confirm receipt manually.
+    </div>
+    <button class="btn-confirm" onclick="confirmQR()">
+      <i class="fas fa-check-circle" style="margin-right:6px;"></i>Manually Confirm Payment Received
+    </button>
+    <button class="btn-modal-cancel" onclick="closeModal('modal-qr')">Cancel Transaction</button>
+  </div>
+</div>
+
+<!-- ═══════ MODAL: Cash Payment ═══════ -->
+<div class="modal-overlay" id="modal-cash">
+  <div class="modal-box">
+    <div class="modal-title"><i class="fas fa-money-bills" style="color:var(--gold);margin-right:8px;"></i>Cash Payment</div>
+    <div class="modal-sub">Enter the amount tendered by the customer.</div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;margin-bottom:5px;">Total Due</div>
+      <div style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--mocha-deep);" id="cash-due">₱0.00</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;margin-bottom:5px;">Cash Tendered</div>
+      <input type="number" class="cash-input" id="cash-tendered" placeholder="0.00" oninput="calcChange()" />
+    </div>
+    <div class="change-row">
+      <span class="change-label">Change</span>
+      <span class="change-value" id="cash-change">₱0.00</span>
+    </div>
+    <button class="btn-confirm" onclick="confirmCash()">
+      <i class="fas fa-check-circle" style="margin-right:6px;"></i>Complete Sale
+    </button>
+    <button class="btn-modal-cancel" onclick="closeModal('modal-cash')">Cancel</button>
+  </div>
+</div>
+
+<!-- ═══════ MODAL: Sale Success ═══════ -->
+<div class="modal-overlay" id="modal-success">
+  <div class="modal-box" style="text-align:center;">
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <div class="modal-title" style="margin-bottom:6px;">Sale Complete!</div>
+    <div class="modal-sub">Transaction recorded successfully.</div>
+    <div style="background:var(--cream);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;text-align:left;">
+      <div class="receipt-row"><span>Transaction #</span><span id="r-txn">#1043</span></div>
+      <div class="receipt-row"><span>Amount</span><span id="r-amt" style="color:var(--gold);">₱0.00</span></div>
+      <div class="receipt-row"><span>Payment</span><span id="r-method">Cash</span></div>
+      <div class="receipt-row" style="border:none;"><span>Cashier</span><span>Mark Reyes</span></div>
+    </div>
+    <button class="btn-confirm" onclick="newTransaction()">
+      <i class="fas fa-plus" style="margin-right:6px;"></i>New Transaction
+    </button>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+/* ── DATA ── */
+const products = [
+  { id:1,  name:'Espresso',       cat:'hot',    price:95,  icon:'☕', stock:45, low:false },
+  { id:2,  name:'Americano',      cat:'hot',    price:105, icon:'🫖', stock:38, low:false },
+  { id:3,  name:'Caramel Latte',  cat:'hot',    price:145, icon:'🍮', stock:28, low:false },
+  { id:4,  name:'Matcha Latte',   cat:'hot',    price:145, icon:'🍵', stock:22, low:false },
+  { id:5,  name:'Hot Choco',      cat:'hot',    price:120, icon:'🍫', stock:30, low:false },
+  { id:6,  name:'Cappuccino',     cat:'hot',    price:130, icon:'☕', stock:25, low:false },
+  { id:7,  name:'Iced Americano', cat:'iced',   price:120, icon:'🧊', stock:35, low:false },
+  { id:8,  name:'Iced Latte',     cat:'iced',   price:140, icon:'🥛', stock:30, low:false },
+  { id:9,  name:'Frappu Caramel', cat:'iced',   price:160, icon:'🧋', stock:18, low:false },
+  { id:10, name:'Iced Matcha',    cat:'iced',   price:150, icon:'🍃', stock:12, low:false },
+  { id:11, name:'Croissant',      cat:'pastry', price:85,  icon:'🥐', stock:20, low:false },
+  { id:12, name:'Blueberry Muffin', cat:'pastry', price:70, icon:'🫐', stock:4, low:true },
+  { id:13, name:'Cinnamon Roll',  cat:'pastry', price:90,  icon:'🌀', stock:8,  low:false },
+  { id:14, name:'Banana Bread',   cat:'pastry', price:75,  icon:'🍌', stock:6,  low:false },
+];
+
+let cart = {};
+let txnCounter = 1043;
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  renderProducts('all');
+  buildQRGrid();
+  updateClock();
+  setInterval(updateClock, 1000);
+});
+
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+
+/* ── PRODUCTS ── */
+function renderProducts(cat) {
+  const list = cat === 'all' ? products : products.filter(p => p.cat === cat);
+  document.getElementById('products-grid').innerHTML = list.map(p => `
+    <div class="product-card${p.low ? ' low-stock' : ''}" onclick="addToCart(${p.id})">
+      ${p.low ? '<span class="low-badge">LOW</span>' : ''}
+      <span class="product-icon">${p.icon}</span>
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">₱${p.price}</div>
+      <div class="product-stock">Stock: ${p.stock}</div>
+    </div>
+  `).join('');
+}
+
+function filterCat(cat, el) {
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderProducts(cat);
+}
+
+/* ── CART ── */
+function addToCart(pid) {
+  const p = products.find(x => x.id === pid);
+  if (!p) return;
+  cart[pid] ? cart[pid].qty++ : (cart[pid] = { ...p, qty: 1 });
+  renderCart();
+  showToast(`${p.icon} ${p.name} added`, 'success');
+}
+
+function changeQty(pid, d) {
+  if (!cart[pid]) return;
+  cart[pid].qty += d;
+  if (cart[pid].qty <= 0) delete cart[pid];
+  renderCart();
+}
+
+function renderCart() {
+  const items = Object.values(cart);
+  const totalQty = items.reduce((s, i) => s + i.qty, 0);
+  const sub = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const vat = sub * 0.12;
+  const grand = sub + vat;
+
+  document.getElementById('cart-count').textContent = totalQty;
+  document.getElementById('subtotal').textContent = `₱${sub.toFixed(2)}`;
+  document.getElementById('vat').textContent = `₱${vat.toFixed(2)}`;
+  document.getElementById('grand-total').textContent = `₱${grand.toFixed(2)}`;
+
+  const el = document.getElementById('cart-items');
+  if (!items.length) {
+    el.innerHTML = `<div class="cart-empty"><i class="fas fa-mug-hot"></i><div>No items yet</div><div style="font-size:11px;margin-top:4px;color:#ccc;">Tap a product to add it</div></div>`;
+    return;
+  }
+  el.innerHTML = items.map(i => `
+    <div class="cart-item">
+      <span style="font-size:20px;">${i.icon}</span>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${i.name}</div>
+        <div class="cart-item-unit">₱${i.price} each</div>
+      </div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty(${i.id},-1)"><i class="fas fa-minus"></i></button>
+        <span class="qty-num">${i.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${i.id},1)"><i class="fas fa-plus"></i></button>
+      </div>
+      <div class="cart-item-total">₱${(i.price * i.qty).toFixed(0)}</div>
+    </div>
+  `).join('');
+}
+
+function clearCart() {
+  cart = {};
+  renderCart();
+}
+
+function getGrand() {
+  const sub = Object.values(cart).reduce((s,i) => s + i.price * i.qty, 0);
+  return +(sub + sub * 0.12).toFixed(2);
+}
+
+/* ── PAYMENT ── */
+function processPayment() {
+  if (!Object.keys(cart).length) { showToast('Cart is empty!', 'warn'); return; }
+  const method = document.getElementById('payment-method').value;
+  if (!method) { showToast('Please select a payment method first.', 'warn'); return; }
+  const grand = getGrand();
+  if (method === 'qr') {
+    document.getElementById('qr-amount').textContent = `₱${grand.toFixed(2)}`;
+    openModal('modal-qr');
+  } else {
+    document.getElementById('cash-due').textContent = `₱${grand.toFixed(2)}`;
+    document.getElementById('cash-tendered').value = '';
+    document.getElementById('cash-change').textContent = '₱0.00';
+    document.getElementById('cash-change').style.color = 'var(--sage)';
+    openModal('modal-cash');
+  }
+}
+
+function confirmQR() {
+  closeModal('modal-qr');
+  completeSale('QR E-Wallet');
+}
+
+function calcChange() {
+  const grand = getGrand();
+  const tendered = parseFloat(document.getElementById('cash-tendered').value) || 0;
+  const change = tendered - grand;
+  const el = document.getElementById('cash-change');
+  el.textContent = change >= 0 ? `₱${change.toFixed(2)}` : '—';
+  el.style.color = change >= 0 ? 'var(--sage)' : 'var(--red-soft)';
+}
+
+function confirmCash() {
+  const grand = getGrand();
+  const tendered = parseFloat(document.getElementById('cash-tendered').value) || 0;
+  if (tendered < grand) { showToast('Insufficient cash amount!', 'warn'); return; }
+  closeModal('modal-cash');
+  completeSale('Cash');
+}
+
+function completeSale(method) {
+  const grand = getGrand();
+  document.getElementById('r-txn').textContent = `#${txnCounter++}`;
+  document.getElementById('r-amt').textContent = `₱${grand.toFixed(2)}`;
+  document.getElementById('r-method').textContent = method;
+  openModal('modal-success');
+}
+
+function newTransaction() {
+  closeModal('modal-success');
+  clearCart();
+  document.getElementById('payment-method').value = '';
+}
+
+/* ── MODALS ── */
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(m =>
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); })
+);
+
+/* ── QR GRID (decorative) ── */
+function buildQRGrid() {
+  const g = document.getElementById('qr-grid');
+  if (g) g.innerHTML = Array.from({ length: 49 }, () => `<div class="qr-cell"></div>`).join('');
+}
+
+/* ── TOAST ── */
+function showToast(msg, type = 'success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast-msg ${type}`;
+  t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 2800);
+}
+</script>
+</body>
+</html>
